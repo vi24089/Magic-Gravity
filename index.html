@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocha Chueiri - Torneio Mágico</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Escola Mágica Ancestral Rocha Chueiri</h1>
+            <p class="subtitle">Competição Anual das Montanhas Nebulosas</p>
+        </header>
+
+        <section class="controls">
+            <button id="btn-iniciar" onclick="iniciarTorneio()">Iniciar Competição</button>
+        </section>
+
+        <section id="log-competicao" class="log-container">
+            <p class="log-placeholder">Clique no botão acima para iniciar os desafios mágicos...</p>
+        </section>
+
+        <section id="placar" class="placar-container hidden">
+            <h2>🏆 Resultado Final</h2>
+            <div id="resultado-final"></div>
+        </section>
+    </div>
+
+    <script>
+        class Criatura {
+            constructor(nome, tipo, poder) {
+                this.nome = nome;
+                this.tipo = tipo;
+                this.poder = poder;
+            }
+        }
+
+        class Estudante {
+            constructor(nome, raca, especialidade) {
+                this.nome = nome;
+                this.raca = raca;
+                this.especialidade = especialidade;
+            }
+        }
+
+        class Equipe {
+            constructor(nome, estudante, criatura) {
+                this.nome = nome;
+                this.estudante = estudante;
+                this.criatura = criatura;
+                this.pontos = 0;
+            }
+
+            executarDesafio() {
+                const sorteio = Math.floor(Math.random() * 20) + 1;
+                let pontosGanhos = 0;
+                let mensagem = "";
+
+                if (sorteio > 8) {
+                    pontosGanhos = Math.floor(Math.random() * 31) + 20;
+                    mensagem = `✨ <strong>Sucesso absoluto!</strong> ${this.estudante.nome} (${this.estudante.raca}) usou ${this.estudante.especialidade} junto com o poder de ${this.criatura.poder} de ${this.criatura.nome} (${this.criatura.tipo}). +${pontosGanhos} pts.`;
+                } else {
+                    pontosGanhos = Math.floor(Math.random() * 11) + 5;
+                    mensagem = `⚠️ <strong>Desafio difícil!</strong> A equipe enfrentou complicações na arena, mas conseguiu prosseguir. +${pontosGanhos} pts.`;
+                }
+
+                this.pontos += pontosGanhos;
+                return mensagem;
+            }
+        }
+
+        const desafios = [
+            "A Travessia dos Picos de Névoa",
+            "O Enigma do Cristal Ancestral",
+            "A Arena dos Elementos Antigos"
+        ];
+
+        function iniciarTorneio() {
+            const logElement = document.getElementById("log-competicao");
+            const placarElement = document.getElementById("placar");
+            const resultadoElement = document.getElementById("resultado-final");
+
+            logElement.innerHTML = "";
+            placarElement.classList.add("hidden");
+
+            const equipes = [
+                new Equipe("Gavras de Fogo", new Estudante("Kaelen", "Elfo", "Feitiços Arcanos"), new Criatura("Ignis", "Dragão", "Chamas Primordiais")),
+                new Equipe("Guardiões dos Picos", new Estudante("Thorin", "Anão", "Runas e Geomancia"), new Criatura("Aero", "Grifo", "Ventos de Tempestade")),
+                new Equipe("Chama Eterna", new Estudante("Lyra", "Humana", "Alquimia e Luz"), new Criatura("Solaria", "Fênix", "Ressurreição Solar"))
+            ];
+
+            desafios.forEach((desafio, index) => {
+                const desafioHeader = document.createElement("div");
+                desafioHeader.className = "desafio-title";
+                desafioHeader.innerHTML = `<h3>⚔️ Desafio ${index + 1}: ${desafio}</h3>`;
+                logElement.appendChild(desafioHeader);
+
+                equipes.forEach(eq => {
+                    const res = eq.executarDesafio();
+                    const entry = document.createElement("p");
+                    entry.className = "log-entry";
+                    entry.innerHTML = `<strong>[${eq.nome}]</strong>: ${res}`;
+                    logElement.appendChild(entry);
+                });
+            });
+
+            equipes.sort((a, b) => b.pontos - a.pontos);
+
+            resultadoElement.innerHTML = "";
+            equipes.forEach((eq, pos) => {
+                const card = document.createElement("div");
+                card.className = `rank-card rank-${pos + 1}`;
+                card.innerHTML = `
+                    <span><strong>${pos + 1}º Lugar:</strong> ${eq.nome} (${eq.estudante.nome} & ${eq.criatura.nome})</span>
+                    <span><strong>${eq.pontos} pts</strong></span>
+                `;
+                resultadoElement.appendChild(card);
+            });
+
+            placarElement.classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>
